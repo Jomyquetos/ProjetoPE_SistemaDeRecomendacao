@@ -42,7 +42,6 @@ void carregaDados(struct SistemaRecomendacao *sis, const char *nomeArquivo)
     // Com todos os clientes descobertos, ajustamos o tamanho da matriz principal da Lista de Compras
     sis->lista_compras.resize(sis->clientes.size());
 
-    // Volta o cursor de leitura do arquivo para a linha zero (início)
     rewind(arquivo);
 
     // Relacionamento
