@@ -119,51 +119,66 @@ void constroiMatrizSimilaridade(struct SistemaRecomendacao *sis)
 {
     int qtd_clientes = sis->clientes.size();
 
-    // Cria a matriz preenchida com zeros
-    sis->matriz_similaridade.resize(qtd_clientes, vector<int>(qtd_clientes, 0));
+    sis->matriz_similaridade.resize(
+        qtd_clientes,
+        vector<double>(qtd_clientes, 0.0));
 
-    // Calcula a similaridade entre todos os pares de clientes
-    for (int i = 0; i < qtd_clientes; i++) // Percorre todos os clientes
+    for (int i = 0; i < qtd_clientes; i++)
     {
-        for (int j = 0; j < qtd_clientes; j++) // Percorre todos os clientes novamente para comparar com o cliente i
+        for (int j = 0; j < qtd_clientes; j++)
         {
-            sis->matriz_similaridade[i][j] = calculaSimilaridade(sis, i, j); // Calcula quantos produtos os clientes i e j têm em comum
+            sis->matriz_similaridade[i][j] =
+                calculaSimilaridade(sis, i, j);
         }
     }
 }
 
-int calculaSimilaridade(struct SistemaRecomendacao *sis, int cliente1, int cliente2)
+double calculaSimilaridade(struct SistemaRecomendacao *sis, int cliente1, int cliente2)
 {
-    int similaridade = 0;
+    int intersecao = 0;
+    int quantidadeCliente1 = 0;
 
     int qtd_produtos = sis->produtos.size();
 
     for (int i = 0; i < qtd_produtos; i++)
     {
-        similaridade += sis->matriz_compras[cliente1][i] * sis->matriz_compras[cliente2][i];
+        if (sis->matriz_compras[cliente1][i] == 1)
+        {
+            quantidadeCliente1++;
+        }
+
+        if (sis->matriz_compras[cliente1][i] == 1 &&
+            sis->matriz_compras[cliente2][i] == 1)
+        {
+            intersecao++;
+        }
     }
 
-    return similaridade;
+    if (quantidadeCliente1 == 0)
+    {
+        return 1.0;
+    }
+
+    return 1.0 - ((double)intersecao / quantidadeCliente1);
 }
 
 int encontraClienteMaisParecido(struct SistemaRecomendacao *sis, int cliente)
 {
-    int maiorSimilaridade = -1;
+    double menorSimilaridade = 2.0;
     int clienteMaisParecido = -1;
 
     int qtd_clientes = sis->clientes.size();
 
     for (int i = 0; i < qtd_clientes; i++)
     {
-        // Não compara o cliente com ele mesmo
         if (i == cliente)
         {
             continue;
         }
 
-        if (sis->matriz_similaridade[cliente][i] > maiorSimilaridade)
+        if (sis->matriz_similaridade[cliente][i] < menorSimilaridade)
         {
-            maiorSimilaridade = sis->matriz_similaridade[cliente][i];
+            menorSimilaridade = sis->matriz_similaridade[cliente][i];
             clienteMaisParecido = i;
         }
     }

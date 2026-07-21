@@ -30,7 +30,7 @@ struct SistemaRecomendacao
 
     vector<vector<int>> matriz_compras; // atividade 2 - matriz de compras (clientes x produtos)
 
-    vector<vector<int>> matriz_similaridade; // atividade 2 - matriz de similaridade (clientes x clientes)
+    vector<vector<double>> matriz_similaridade; // atividade 2 - matriz de similaridade (clientes x clientes)
 };
 
 // Função para ler o arquivo CSV e preencher as estruturas acima
@@ -48,7 +48,7 @@ void constroiMatrizCompras(struct SistemaRecomendacao *sis);
 void constroiMatrizSimilaridade(struct SistemaRecomendacao *sis);
 
 // Calcula quantos produtos dois clientes possuem em comum
-int calculaSimilaridade(struct SistemaRecomendacao *sis, int cliente1, int cliente2);
+double calculaSimilaridade(struct SistemaRecomendacao *sis, int cliente1, int cliente2);
 
 // Encontra o cliente mais semelhante ao cliente informado
 int encontraClienteMaisParecido(struct SistemaRecomendacao *sis, int cliente);

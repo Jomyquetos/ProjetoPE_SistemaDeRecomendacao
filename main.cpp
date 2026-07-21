@@ -1,5 +1,6 @@
 #include "listaCompras.hpp"
 #include <stdio.h> // Para a função scanf
+#include "recomendacao.hpp"
 
 int main()
 {
@@ -49,6 +50,23 @@ int main()
 
             // Exibe o resultado
             cout << "Cliente mais parecido: " << sistema.clientes[semelhante] << endl;
+
+            cout << "Similaridade: " << sistema.matriz_similaridade[id_cliente][semelhante] << endl;
+
+            int k;
+
+            cout << "Digite k: ";
+            scanf("%d", &k);
+
+            vector<ProdutoRanking> recomendados =
+                recomendarProdutos(&sistema, id_cliente, k);
+
+            cout << "\nProdutos recomendados:\n";
+
+            for (int j = 0; j < recomendados.size(); j++)
+            {
+                cout << j + 1 << " - " << sistema.produtos[recomendados[j].idProduto] << endl;
+            }
         }
     }
 
