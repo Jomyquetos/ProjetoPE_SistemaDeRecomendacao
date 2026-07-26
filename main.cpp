@@ -1,54 +1,69 @@
 #include "listaCompras.hpp"
-#include <stdio.h> // Para a função scanf
+#include <stdio.h>
+#include <ctime>
 #include "recomendacao.hpp"
 
 int main()
 {
     struct SistemaRecomendacao sistema;
 
-    char nome_arquivo[100]; // Variável para guardar o nome do arquivo digitado
+    char nome_arquivo[100];
 
-    // Pergunta qual cluster o usuário quer ler
-    cout << "Digite o nome do arquivo CSV (ex: dados_venda_cluster_0.csv): ";
+    cout << "\nDigite o nome do arquivo CSV (ex: dados_venda_cluster_0.csv): ";
     scanf("%99s", nome_arquivo);
 
-    // Chama a função passando o nome do arquivo que você digitou
     carregaDados(&sistema, nome_arquivo);
 
     constroiMatrizCompras(&sistema);
 
-    cout << "\nCalculando matriz de similaridade..."
-         << endl;
+    cout << "\nCalculando matriz de similaridade..." << endl;
+    // =========
+    // constroiMatrizSimilaridade(&sistema);
 
-    constroiMatrizSimilaridade(&sistema);
+    int opcao;
 
-    cout << "Matriz de similaridade concluida!\n"
-         << endl;
+    cout << "\nEscolha como voce quer calcular a similaridade:\n";
+    cout << "1 - Padrao\n";
+    cout << "2 - Otimizado\n";
+    cout << "Opcao: ";
+    scanf("%d", &opcao);
 
-    // Variável temporária do tipo "C clássico" para podermos usar o scanf
+    cout << "\nCalculando matriz de similaridade..." << endl;
+
+    clock_t inicio = clock();
+
+    if (opcao == 1)
+    {
+        constroiMatrizSimilaridadePadrao(&sistema);
+    }
+    else
+    {
+        constroiMatrizSimilaridadeOtimizada(&sistema);
+    }
+
+    clock_t fim = clock();
+
+    double tempo = (double)(fim - inicio) / CLOCKS_PER_SEC;
+
+    cout << "\nMatriz de similaridade concluida." << endl;
+
+    cout << "Tempo de execucao: " << tempo << " segundos." << endl;
+    // =========
     char codigo_digitado[50];
 
-    // Laço para testar 3 clientes diferentes conforme exigido
     for (int i = 0; i < 3; i++)
     {
-        cout << "Digite o codigo original do cliente " << (i + 1) << ": ";
-
-        // O scanf lê a string (texto) do teclado guardando no nosso vetor de char
+        cout << "\nDigite o codigo original do cliente " << (i + 1) << ": ";
         scanf("%49s", codigo_digitado);
 
-        // Passamos a estrutura por referência e o código digitado para a função.
-        // O C++ converte automaticamente o char[] para std::string aqui!
         exibeComprasCliente(&sistema, codigo_digitado);
 
         if (sistema.mapa_clientes.find(codigo_digitado) != sistema.mapa_clientes.end())
         {
-            // Obtém o ID interno do cliente
             int id_cliente = sistema.mapa_clientes[codigo_digitado];
 
-            // Encontra o cliente mais parecido
             int semelhante = encontraClienteMaisParecido(&sistema, id_cliente);
 
-            // Exibe o resultado
             cout << "Cliente mais parecido: " << sistema.clientes[semelhante] << endl;
 
             cout << "Similaridade: " << sistema.matriz_similaridade[id_cliente][semelhante] << endl;
@@ -58,8 +73,7 @@ int main()
             cout << "Digite k: ";
             scanf("%d", &k);
 
-            vector<ProdutoRanking> recomendados =
-                recomendarProdutos(&sistema, id_cliente, k);
+            vector<ProdutoRanking> recomendados = recomendarProdutos(&sistema, id_cliente, k);
 
             cout << "\nProdutos recomendados:\n";
 
