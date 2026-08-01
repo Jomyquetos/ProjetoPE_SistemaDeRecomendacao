@@ -6,7 +6,7 @@ void carregaDados(struct SistemaRecomendacao *sis, const char *nomeArquivo)
     FILE *arquivo = fopen(nomeArquivo, "r");
     if (arquivo == NULL)
     {
-        cout << "Não foi possível abrir o arquivo." << endl;
+        cout << "Nao foi possivel abrir o arquivo." << endl;
         return;
     }
 
@@ -110,6 +110,97 @@ void constroiMatrizCompras(struct SistemaRecomendacao *sis)
 //}
 //}
 //}
+
+// Atividade 5:
+
+void constroiMatrizCSR(struct SistemaRecomendacao *sis)
+{
+    // Limpa os vetores caso já tenham sido utilizados
+    sis->values.clear();
+    sis->col_index.clear();
+    sis->row_ptr.clear();
+
+    int qtd_clientes = sis->matriz_compras.size();
+
+    // A primeira linha sempre começa na posição 0
+    sis->row_ptr.push_back(0);
+
+    for (int i = 0; i < qtd_clientes; i++)
+    {
+        int qtd_produtos = sis->matriz_compras[i].size();
+
+        for (int j = 0; j < qtd_produtos; j++)
+        {
+            if (sis->matriz_compras[i][j] != 0)
+            {
+                sis->values.push_back(sis->matriz_compras[i][j]);
+                sis->col_index.push_back(j);
+            }
+        }
+
+        // Marca onde começa a próxima linha
+        sis->row_ptr.push_back(sis->values.size());
+    }
+}
+
+void constroiMatrizSimilaridadeCSR(struct SistemaRecomendacao *sis)
+{
+    int qtd_clientes = sis->clientes.size();
+
+    sis->matriz_similaridade.assign(qtd_clientes, vector<double>(qtd_clientes, 0.0));
+
+    for (int i = 0; i < qtd_clientes; i++)
+    {
+        for (int j = i; j < qtd_clientes; j++)
+        {
+            int inicio1 = sis->row_ptr[i];
+            int fim1 = sis->row_ptr[i + 1];
+
+            int inicio2 = sis->row_ptr[j];
+            int fim2 = sis->row_ptr[j + 1];
+
+            int p1 = inicio1;
+            int p2 = inicio2;
+
+            double produtoInterno = 0.0;
+            int quantidadeCliente1 = fim1 - inicio1;
+
+            while (p1 < fim1 && p2 < fim2)
+            {
+                if (sis->col_index[p1] == sis->col_index[p2])
+                {
+                    produtoInterno += sis->values[p1] * sis->values[p2];
+
+                    p1++;
+                    p2++;
+                }
+                else if (sis->col_index[p1] < sis->col_index[p2])
+                {
+                    p1++;
+                }
+                else
+                {
+                    p2++;
+                }
+            }
+
+            double similaridade;
+
+            if (quantidadeCliente1 == 0)
+            {
+                similaridade = 1.0;
+            }
+            else
+            {
+                similaridade = 1.0 - (produtoInterno / quantidadeCliente1);
+            }
+
+            sis->matriz_similaridade[i][j] = similaridade;
+            sis->matriz_similaridade[j][i] = similaridade;
+        }
+    }
+}
+// Atividade 4:
 
 void constroiMatrizSimilaridadePadrao(struct SistemaRecomendacao *sis)
 {

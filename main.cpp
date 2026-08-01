@@ -17,6 +17,7 @@ int main()
     constroiMatrizCompras(&sistema);
 
     cout << "\nCalculando matriz de similaridade..." << endl;
+
     // =========
     // constroiMatrizSimilaridade(&sistema);
 
@@ -25,6 +26,7 @@ int main()
     cout << "\nEscolha como voce quer calcular a similaridade:\n";
     cout << "1 - Padrao\n";
     cout << "2 - Otimizado\n";
+    cout << "3 - CSR\n";
     cout << "Opcao: ";
     scanf("%d", &opcao);
 
@@ -36,9 +38,19 @@ int main()
     {
         constroiMatrizSimilaridadePadrao(&sistema);
     }
-    else
+    else if (opcao == 2)
     {
         constroiMatrizSimilaridadeOtimizada(&sistema);
+    }
+    else if (opcao == 3)
+    {
+        constroiMatrizCSR(&sistema);
+        constroiMatrizSimilaridadeCSR(&sistema);
+    }
+    else
+    {
+        cout << "Opcao invalida." << endl;
+        return 1;
     }
 
     clock_t fim = clock();
